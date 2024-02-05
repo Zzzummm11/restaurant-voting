@@ -7,3 +7,18 @@ INSERT INTO USER_ROLE (role, user_id)
 VALUES ('USER', 1),
        ('ADMIN', 2),
        ('USER', 2);
+
+INSERT INTO RESTAURANT (name)
+VALUES ('RESTAURANT_1'),
+       ('RESTAURANT_2'),
+       ('RESTAURANT_3');
+
+INSERT INTO DISH (restaurant_id, date_dish, name, price)
+VALUES (1, '2024-02-04', 'dish_1', 500),
+       (1, '2024-02-04', 'dish_2', 200),
+       (1, '2024-02-04', 'dish_3', 10),
+       (2, '2024-02-04', 'dish_4', 110),
+       (2, '2024-02-04', 'dish_5', 800),
+       (1, CURRENT_DATE, 'dish_6', 25),
+       (1, CURRENT_DATE, 'dish_7', 25),
+       (1, CURRENT_DATE, 'dish_8', 25);
