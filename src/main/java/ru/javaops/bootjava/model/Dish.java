@@ -1,8 +1,8 @@
 package ru.javaops.bootjava.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
         name = "dish_unique_idx")})
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Dish extends NamedEntity {
 
     @Column(name = "date_dish", nullable = false)
@@ -28,8 +28,8 @@ public class Dish extends NamedEntity {
     @NotNull
     private BigDecimal price;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    @NotNull
     private Restaurant restaurant;
 }
