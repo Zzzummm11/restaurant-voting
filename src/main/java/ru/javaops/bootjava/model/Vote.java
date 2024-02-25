@@ -2,7 +2,7 @@ package ru.javaops.bootjava.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +17,8 @@ import java.time.LocalDate;
         name = "vote_unique_idx")})
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Vote extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
