@@ -1,7 +1,7 @@
 package ru.javaops.bootjava.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,13 +14,14 @@ import java.util.List;
 @Table(name = "restaurant", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Restaurant extends NamedEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Dish> menu;
+    private List<Dish> dishes;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Vote> votes;
