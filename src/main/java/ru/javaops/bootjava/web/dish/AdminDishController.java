@@ -16,7 +16,7 @@ import ru.javaops.bootjava.to.DishTo;
 import java.net.URI;
 import java.util.List;
 
-import static ru.javaops.bootjava.util.DishUtil.createFromTo;
+import static ru.javaops.bootjava.util.DishUtil.createNewFromTo;
 import static ru.javaops.bootjava.validation.ValidationUtil.checkNew;
 
 @Slf4j
@@ -54,7 +54,7 @@ public class AdminDishController {
     public ResponseEntity<Dish> create(@Valid @RequestBody DishTo dishTo, @PathVariable int restaurantId) {
         log.info("create new dish for restaurant with id={}", restaurantId);
         restaurantRepository.getExisted(restaurantId);
-        Dish created = createFromTo(dishTo, restaurantRepository.getReferenceById(restaurantId));
+        Dish created = createNewFromTo(dishTo, restaurantRepository.getReferenceById(restaurantId));
         checkNew(created);
         dishRepository.save(created);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -68,7 +68,7 @@ public class AdminDishController {
     public void update(@Valid @RequestBody DishTo dishTo, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("update dish with id={} and restaurantId={}", id, restaurantId);
         dishRepository.getExistedByRestaurantId(id, restaurantId);
-        Dish updated = createFromTo(dishTo, restaurantRepository.getReferenceById(restaurantId));
+        Dish updated = createNewFromTo(dishTo, restaurantRepository.getReferenceById(restaurantId));
         updated.setId(id);
         dishRepository.save(updated);
     }
