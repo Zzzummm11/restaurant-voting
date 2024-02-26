@@ -90,7 +90,7 @@ public class VoteController {
         int userId = authUser.getUser().id();
         log.info("update user's vote with userId={} for the restaurant with id={}", userId, restaurantId);
         restaurantRepository.getExisted(restaurantId);
-        if (LocalTime.now().isBefore(LocalTime.of(23, 0, 0))) {
+        if (LocalTime.now().isBefore(LocalTime.of(11, 0, 0))) {
             Vote vote = voteRepository.getVoteForToday((userId));
             Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
             vote.setRestaurant(restaurant);
