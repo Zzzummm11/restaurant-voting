@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.javaops.bootjava.HasId;
 import ru.javaops.bootjava.model.Restaurant;
 import ru.javaops.bootjava.repository.RestaurantRepository;
 import ru.javaops.bootjava.to.RestaurantTo;
@@ -41,25 +40,30 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}/votes")
-    public int getVoteCount(@PathVariable int id) {
-        log.info("get restaurantId={} with vote count", id);
-        repository.getExisted(id);
-        return repository.getVoteCount(id);
+    public RestaurantTo getVoteCount(@PathVariable int id) {
+        log.info("get restaurant with id={} with vote count", id);
+        Restaurant restaurantExist = repository.getExisted(id);
+        int count = repository.getVoteCount(id);
+        RestaurantTo restaurantTo = createNewFromTo(restaurantExist);
+        restaurantTo.setVotes(count);
+        return restaurantTo;
     }
 
     @GetMapping("/votes")
-    public Map<Integer, Integer> getAllWithVoteCount() {
-        log.info("get all restaurantId with vote count");
+    public List<RestaurantTo> getAllWithVoteCount() {
+        log.info("get all restaurant with vote count");
         Map<Integer, Integer> map = repository.getRestaurantsWithVoteCount().stream()
                 .collect(Collectors.toMap(
                         result -> (Integer) result[0],
                         result -> ((Number) result[1]).intValue()
                 ));
         return repository.findAll().stream()
-                .collect(Collectors.toMap(
-                        HasId::id,
-                        r -> (map.computeIfAbsent(r.getId(), k -> 0))
-                ));
+                .map(r -> {
+                    RestaurantTo restaurantTo = createNewFromTo(r);
+                    restaurantTo.setVotes(map.computeIfAbsent(r.getId(), k -> 0));
+                    return restaurantTo;
+                })
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}/with-menu-and-votes")
@@ -67,8 +71,10 @@ public class RestaurantController {
         log.info("get restaurant with menu and vote count");
         repository.getExisted(id);
         int count = repository.getVoteCount(id);
-        RestaurantTo restaurantTo = createNewFromTo(repository.getWithMenu(id));
+        Restaurant restaurantWithMenu = repository.getWithMenu(id);
+        RestaurantTo restaurantTo = createNewFromTo(restaurantWithMenu);
         restaurantTo.setVotes(count);
+        restaurantTo.setDishes(restaurantWithMenu.getDishes());
         return restaurantTo;
     }
 
