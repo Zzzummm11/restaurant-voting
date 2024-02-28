@@ -18,6 +18,7 @@ import java.util.List;
 
 import static ru.javaops.bootjava.util.DishUtil.createNewFromTo;
 import static ru.javaops.bootjava.validation.ValidationUtil.checkNew;
+import static ru.javaops.bootjava.web.RestValidation.assureIdConsistent;
 
 @Slf4j
 @RestController
@@ -65,11 +66,12 @@ public class AdminDishController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody DishTo dishTo, @PathVariable int id, @PathVariable int restaurantId) {
+    public void update(@Valid @RequestBody Dish dish, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("update dish with id={} and restaurantId={}", id, restaurantId);
+        assureIdConsistent(dish, id);
+        restaurantRepository.getExisted(restaurantId);
         dishRepository.getExistedByRestaurantId(id, restaurantId);
-        Dish updated = createNewFromTo(dishTo, restaurantRepository.getReferenceById(restaurantId));
-        updated.setId(id);
-        dishRepository.save(updated);
+        dish.setRestaurant(restaurantRepository.getReferenceById(restaurantId));
+        dishRepository.save(dish);
     }
 }
