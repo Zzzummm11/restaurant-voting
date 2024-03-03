@@ -11,12 +11,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.bootjava.model.Restaurant;
 import ru.javaops.bootjava.repository.RestaurantRepository;
 import ru.javaops.bootjava.to.RestaurantTo;
-import ru.javaops.bootjava.util.RestaurantUtil;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static ru.javaops.bootjava.util.RestaurantUtil.createListFromTo;
 import static ru.javaops.bootjava.util.RestaurantUtil.createNewFromTo;
 import static ru.javaops.bootjava.web.RestValidation.checkNew;
 
@@ -38,9 +37,7 @@ public class AdminRestaurantController {
     @GetMapping
     public List<RestaurantTo> getAll() {
         log.info("get all restaurants");
-        return repository.findAll().stream()
-                .map(RestaurantUtil::createNewFromTo)
-                .collect(Collectors.toList());
+        return createListFromTo(repository.findAll());
     }
 
     @DeleteMapping("/{id}")
