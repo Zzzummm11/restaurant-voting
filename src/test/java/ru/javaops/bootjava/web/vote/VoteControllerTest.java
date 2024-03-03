@@ -1,7 +1,9 @@
 package ru.javaops.bootjava.web.vote;
 
+import config.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
@@ -10,6 +12,7 @@ import ru.javaops.bootjava.model.Vote;
 import ru.javaops.bootjava.repository.VoteRepository;
 import ru.javaops.bootjava.to.VoteTo;
 import ru.javaops.bootjava.util.JsonUtil;
+import ru.javaops.bootjava.util.VoteUtil;
 import ru.javaops.bootjava.web.AbstractControllerTest;
 
 import java.time.LocalDate;
@@ -20,14 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javaops.bootjava.util.VoteUtil.createListFromTo;
 import static ru.javaops.bootjava.util.VoteUtil.createNewFromTo;
-import static ru.javaops.bootjava.web.restaurant.RestaurantTestData.RESTAURANT1_ID;
-import static ru.javaops.bootjava.web.restaurant.RestaurantTestData.restaurant1;
+import static ru.javaops.bootjava.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.bootjava.web.user.UserTestData.*;
 import static ru.javaops.bootjava.web.vote.VoteController.REST_URL;
 import static ru.javaops.bootjava.web.vote.VoteTestData.NOT_FOUND;
 import static ru.javaops.bootjava.web.vote.VoteTestData.*;
 
-
+@Import(TestConfig.class)
 public class VoteControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL_SLASH = REST_URL + '/';
@@ -139,5 +141,18 @@ public class VoteControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(vote)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void update() throws Exception {
+        Integer vote = RESTAURANT2_ID;
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(vote)))
+                .andExpect(status().isNoContent());
+        Vote actual = voteRepository.getVoteForToday(ADMIN_ID);
+        VoteTo updateVoteTo = new VoteTo(actual.getId(), ADMIN_ID, RESTAURANT2_ID, LocalDate.now());
+        VOTE_TO_MATCHER.assertMatch(VoteUtil.createNewFromTo(voteRepository.getExisted(VOTE1_ID + 1)), updateVoteTo);
     }
 }

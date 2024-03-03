@@ -1,8 +1,10 @@
 package ru.javaops.bootjava.web.restaurant;
 
+import config.TestConfig;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
@@ -22,6 +24,7 @@ import static ru.javaops.bootjava.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.bootjava.web.user.UserTestData.ADMIN_MAIL;
 import static ru.javaops.bootjava.web.user.UserTestData.USER_MAIL;
 
+@Import(TestConfig.class)
 public class AdminRestaurantControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL_SLASH = AdminRestaurantController.REST_URL + '/';
