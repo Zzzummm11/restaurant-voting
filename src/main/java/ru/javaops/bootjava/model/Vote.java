@@ -37,4 +37,11 @@ public class Vote extends BaseEntity {
     @NotNull
     @DateTimeFormat
     private LocalDate date;
+
+    public Vote(Integer id, User user, Restaurant restaurant, LocalDate date) {
+        super(id);
+        this.user = user;
+        this.restaurant = restaurant;
+        this.date = date;
+    }
 }

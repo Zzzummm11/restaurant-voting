@@ -16,7 +16,6 @@ import ru.javaops.bootjava.repository.RestaurantRepository;
 import ru.javaops.bootjava.repository.UserRepository;
 import ru.javaops.bootjava.repository.VoteRepository;
 import ru.javaops.bootjava.to.VoteTo;
-import ru.javaops.bootjava.util.VoteUtil;
 import ru.javaops.bootjava.web.AuthUser;
 
 import java.net.URI;
@@ -24,8 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import static ru.javaops.bootjava.util.VoteUtil.createListFromTo;
 import static ru.javaops.bootjava.util.VoteUtil.createNewFromTo;
 
 @Slf4j
@@ -52,9 +51,7 @@ public class VoteController {
     public List<VoteTo> getAll(@AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.getUser().id();
         log.info("get all votes for user with id={}", userId);
-        return voteRepository.getAllByUserId(userId).stream()
-                .map(VoteUtil::createNewFromTo)
-                .collect(Collectors.toList());
+        return createListFromTo(voteRepository.getAllByUserId(userId));
     }
 
     @DeleteMapping("/{id}")
