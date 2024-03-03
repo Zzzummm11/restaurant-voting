@@ -1,9 +1,7 @@
 package ru.javaops.bootjava.web.dish;
 
-import config.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
@@ -26,7 +24,6 @@ import static ru.javaops.bootjava.web.restaurant.RestaurantTestData.RESTAURANT2_
 import static ru.javaops.bootjava.web.user.UserTestData.ADMIN_MAIL;
 import static ru.javaops.bootjava.web.user.UserTestData.USER_MAIL;
 
-@Import(TestConfig.class)
 public class AdminDishControllerTest extends AbstractControllerTest {
 
     @Autowired
