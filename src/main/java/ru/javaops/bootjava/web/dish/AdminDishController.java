@@ -17,8 +17,8 @@ import java.net.URI;
 import java.util.List;
 
 import static ru.javaops.bootjava.util.DishUtil.createNewFromTo;
-import static ru.javaops.bootjava.validation.ValidationUtil.checkNew;
 import static ru.javaops.bootjava.web.RestValidation.assureIdConsistent;
+import static ru.javaops.bootjava.web.RestValidation.checkNew;
 
 @Slf4j
 @RestController
@@ -33,13 +33,14 @@ public class AdminDishController {
     @GetMapping("/{id}")
     public Dish get(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("get dish with id={} and restaurantId={}, ", id, restaurantId);
-        return dishRepository.getExistedByRestaurantId(id, restaurantId);
+        restaurantRepository.checkExisted(restaurantId);
+        return dishRepository.checkExistedByRestaurantId(id, restaurantId);
     }
 
     @GetMapping
     public List<Dish> getAllByRestaurant(@PathVariable int restaurantId) {
         log.info("get all dishes for restaurant with id={}, ", restaurantId);
-        restaurantRepository.getExisted(restaurantId);
+        restaurantRepository.checkExisted(restaurantId);
         return dishRepository.getAllByRestaurant(restaurantId);
     }
 
@@ -47,14 +48,15 @@ public class AdminDishController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("delete dishId={} for restaurantId={}", id, restaurantId);
-        dishRepository.getExistedByRestaurantId(id, restaurantId);
+        restaurantRepository.checkExisted(restaurantId);
+        dishRepository.checkExistedByRestaurantId(id, restaurantId);
         dishRepository.deleteExisted(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Dish> create(@Valid @RequestBody DishTo dishTo, @PathVariable int restaurantId) {
         log.info("create new dish for restaurant with id={}", restaurantId);
-        restaurantRepository.getExisted(restaurantId);
+        restaurantRepository.checkExisted(restaurantId);
         Dish created = createNewFromTo(dishTo, restaurantRepository.getReferenceById(restaurantId));
         checkNew(created);
         dishRepository.save(created);
@@ -69,8 +71,8 @@ public class AdminDishController {
     public void update(@Valid @RequestBody Dish dish, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("update dish with id={} and restaurantId={}", id, restaurantId);
         assureIdConsistent(dish, id);
-        restaurantRepository.getExisted(restaurantId);
-        dishRepository.getExistedByRestaurantId(id, restaurantId);
+        restaurantRepository.checkExisted(restaurantId);
+        dishRepository.checkExistedByRestaurantId(id, restaurantId);
         dish.setRestaurant(restaurantRepository.getReferenceById(restaurantId));
         dishRepository.save(dish);
     }

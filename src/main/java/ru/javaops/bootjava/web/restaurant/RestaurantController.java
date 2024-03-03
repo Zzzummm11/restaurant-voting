@@ -29,7 +29,7 @@ public class RestaurantController {
     @GetMapping("/{id}/with-menu")
     public Restaurant getWithMenu(@PathVariable int id) {
         log.info("get restaurant with menu, restaurantId={}", id);
-        repository.getExisted(id);
+        repository.checkExisted(id);
         return repository.getWithMenu(id);
     }
 
@@ -69,7 +69,7 @@ public class RestaurantController {
     @GetMapping("/{id}/with-menu-and-votes")
     public RestaurantTo getWithMenuAndVoteCount(@PathVariable int id) {
         log.info("get restaurant with menu and vote count");
-        repository.getExisted(id);
+        repository.checkExisted(id);
         int count = repository.getVoteCount(id);
         Restaurant restaurantWithMenu = repository.getWithMenu(id);
         RestaurantTo restaurantTo = createNewFromTo(restaurantWithMenu);

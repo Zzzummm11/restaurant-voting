@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.bootjava.model.Restaurant;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.javaops.bootjava.util.RestaurantUtil.createNewFromTo;
-import static ru.javaops.bootjava.validation.ValidationUtil.checkNew;
+import static ru.javaops.bootjava.web.RestValidation.checkNew;
 
 @Slf4j
 @RestController
@@ -54,7 +53,6 @@ public class AdminRestaurantController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestaurantTo> create(@Valid @RequestBody Restaurant restaurant) {
         log.info("create restaurant {}", restaurant);
-        Assert.notNull(restaurant, "restaurant must not be null");
         checkNew(restaurant);
         Restaurant created = repository.save(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -67,8 +65,8 @@ public class AdminRestaurantController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
         log.info("update restaurant with id={}", id);
-        Restaurant restaurantExist = repository.getExisted(id);
-        restaurant.setId(restaurantExist.getId());
+        repository.checkExisted(id);
+        restaurant.setId(repository.getReferenceById(id).getId());
         repository.save(restaurant);
     }
 }

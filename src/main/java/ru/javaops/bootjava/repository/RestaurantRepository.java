@@ -27,4 +27,10 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
 
     @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.dishes m WHERE m.dateTime = CURRENT_DATE")
     List<Restaurant> getAllWithMenu();
+
+    default void checkExisted(int id) {
+        if (!existsById(id)) {
+            throw new NotFoundException("Restaurant with id=" + id + " does not exist");
+        }
+    }
 }

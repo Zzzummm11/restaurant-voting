@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.bootjava.error.IllegalRequestDataException;
@@ -56,20 +57,19 @@ public class VoteController {
                 .collect(Collectors.toList());
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@AuthenticationPrincipal AuthUser authUser){
+    public void delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id){
         int userId = authUser.getUser().id();
         log.info("delete vote for user with id={}", userId);
-        Vote vote = voteRepository.getVoteForToday((userId));
-        voteRepository.deleteExisted(vote.id());
+        voteRepository.deleteExisted(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VoteTo> create(@RequestBody Integer restaurantId, @AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.getUser().id();
         log.info("user with id={} votes for the restaurant with id={}", userId, restaurantId);
-        restaurantRepository.getExisted(restaurantId);
+        restaurantRepository.checkExisted(restaurantId);
         Optional<Vote> vote = voteRepository.findByUserIdAndCurrentDate((userId));
         if (vote.isEmpty()) {
             Vote created = new Vote(userRepository.getReferenceById(userId),
@@ -84,12 +84,13 @@ public class VoteController {
         }
     }
 
+    @Transactional
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody Integer restaurantId, @AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.getUser().id();
         log.info("update user's vote with userId={} for the restaurant with id={}", userId, restaurantId);
-        restaurantRepository.getExisted(restaurantId);
+        restaurantRepository.checkExisted(restaurantId);
         if (LocalTime.now().isBefore(LocalTime.of(11, 0, 0))) {
             Vote vote = voteRepository.getVoteForToday((userId));
             Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
