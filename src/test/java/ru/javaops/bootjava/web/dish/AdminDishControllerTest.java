@@ -128,7 +128,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
     @Transactional(propagation = Propagation.NEVER)
     @WithUserDetails(value = ADMIN_MAIL)
     void createDuplicate() throws Exception {
-        Dish expected = new Dish(null, dish7.getName(), dish7.getDateTime(),dish7.getPrice());
+        Dish expected = new Dish(null, dish7.getName(), dish7.getDate(),dish7.getPrice());
         perform(MockMvcRequestBuilders.post(REST_URL_SLASH + RESTAURANT1_ID + "/dishes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(expected)))
@@ -164,7 +164,7 @@ public class AdminDishControllerTest extends AbstractControllerTest {
     @Transactional(propagation = Propagation.NEVER)
     @WithUserDetails(value = ADMIN_MAIL)
     void updateDuplicate() throws Exception {
-        Dish updated = new Dish(DISH1_ID, dish2.getName(), dish2.getDateTime(), dish2.getPrice());
+        Dish updated = new Dish(DISH1_ID, dish2.getName(), dish2.getDate(), dish2.getPrice());
         perform(MockMvcRequestBuilders.put(REST_URL_SLASH + RESTAURANT1_ID + "/dishes/" + DISH1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
