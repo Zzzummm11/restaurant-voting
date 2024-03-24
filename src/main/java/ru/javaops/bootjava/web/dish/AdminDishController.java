@@ -14,6 +14,7 @@ import ru.javaops.bootjava.repository.RestaurantRepository;
 import ru.javaops.bootjava.to.DishTo;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 import static ru.javaops.bootjava.util.DishUtil.createNewFromTo;
@@ -38,10 +39,17 @@ public class AdminDishController {
     }
 
     @GetMapping
-    public List<Dish> getAllByRestaurant(@PathVariable int restaurantId) {
+    public List<Dish> getAll(@PathVariable int restaurantId) {
         log.info("get all dishes for restaurant with id={}, ", restaurantId);
         restaurantRepository.checkExisted(restaurantId);
-        return dishRepository.getAllByRestaurant(restaurantId);
+        return dishRepository.getAll(restaurantId);
+    }
+
+    @GetMapping("/menu")
+    public List<Dish> getAllByDate(@PathVariable int restaurantId, @RequestParam LocalDate date) {
+        log.info("get all dishes by date={} for restaurant with id={}, ", date, restaurantId);
+        restaurantRepository.checkExisted(restaurantId);
+        return dishRepository.getAllByDate(restaurantId, date);
     }
 
     @DeleteMapping("/{id}")

@@ -5,8 +5,6 @@ import ru.javaops.bootjava.model.Dish;
 import ru.javaops.bootjava.model.Restaurant;
 import ru.javaops.bootjava.to.DishTo;
 
-import java.time.LocalDate;
-
 @UtilityClass
 public class DishUtil {
 
@@ -14,7 +12,7 @@ public class DishUtil {
         Dish dish = new Dish();
         dish.setName(dishTo.getName());
         dish.setPrice(dishTo.getPrice());
-        dish.setDateTime(LocalDate.now());
+        dish.setDate(dishTo.getDate());
         dish.setRestaurant(restaurant);
         return dish;
     }

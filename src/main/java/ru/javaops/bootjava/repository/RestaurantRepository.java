@@ -12,7 +12,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface RestaurantRepository extends BaseRepository<Restaurant> {
 
-    @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.dishes m WHERE r.id = :id AND m.dateTime = CURRENT_DATE")
+    @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.dishes m WHERE r.id = :id AND m.date = CURRENT_DATE")
     Optional<Restaurant> findWithMenu(@Param("id") int id);
 
     default Restaurant getWithMenu(int id) {
@@ -25,7 +25,7 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
     @Query("SELECT COUNT(v) FROM Vote v WHERE v.restaurant.id = :id AND v.date = CURRENT_DATE")
     int getVoteCount(@Param("id") int id);
 
-    @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.dishes m WHERE m.dateTime = CURRENT_DATE")
+    @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.dishes m WHERE m.date = CURRENT_DATE")
     List<Restaurant> getAllWithMenu();
 
     default void checkExisted(int id) {

@@ -13,7 +13,7 @@ public class DishTo extends NamedTo {
     @NotNull
     private BigDecimal price;
 
-    private LocalDate dateTime;
+    private LocalDate date;
 
     public DishTo(Integer id, String name, BigDecimal price) {
         super(id, name);
