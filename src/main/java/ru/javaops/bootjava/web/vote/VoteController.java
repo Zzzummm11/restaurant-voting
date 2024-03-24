@@ -54,14 +54,6 @@ public class VoteController {
         return createListFromTo(voteRepository.getAllByUserId(userId));
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id){
-        int userId = authUser.getUser().id();
-        log.info("delete vote for user with id={}", userId);
-        voteRepository.deleteExisted(id);
-    }
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VoteTo> create(@RequestBody Integer restaurantId, @AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.getUser().id();
