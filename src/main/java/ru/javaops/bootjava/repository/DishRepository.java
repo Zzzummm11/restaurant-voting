@@ -16,7 +16,7 @@ public interface DishRepository extends BaseRepository<Dish> {
     @Query("SELECT d FROM Dish d WHERE d.id=:id AND d.restaurant.id=:restaurantId")
     Optional<Dish> findByIdAndRestaurantId(int id, int restaurantId);
 
-    default Dish checkExistedByRestaurantId(int id, int restaurantId) {
+    default Dish getExistedByRestaurantId(int id, int restaurantId) {
         return findByIdAndRestaurantId(id, restaurantId).orElseThrow(() -> new NotFoundException("Dish with id=" + id +
                 " and restaurantId=" + restaurantId + " not found"));
     }

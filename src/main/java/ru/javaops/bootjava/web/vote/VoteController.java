@@ -24,42 +24,46 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.javaops.bootjava.util.VoteUtil.createListFromTo;
-import static ru.javaops.bootjava.util.VoteUtil.createNewFromTo;
+import static ru.javaops.bootjava.util.DateUtil.CURRENT_DATE;
+import static ru.javaops.bootjava.util.DateUtil.VOTE_TIME;
+import static ru.javaops.bootjava.util.VoteUtil.createListTo;
+import static ru.javaops.bootjava.util.VoteUtil.createNewTo;
 
 @Slf4j
 @RestController
 @AllArgsConstructor
+@Transactional(readOnly = true)
 @RequestMapping(value = VoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class VoteController {
     static final String REST_URL = "/api/votes";
 
-    protected RestaurantRepository restaurantRepository;
+    private RestaurantRepository restaurantRepository;
 
-    protected UserRepository userRepository;
+    private UserRepository userRepository;
 
-    protected VoteRepository voteRepository;
+    private VoteRepository voteRepository;
 
     @GetMapping("/current-vote")
     public VoteTo getCurrent(@AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.getUser().id();
         log.info("get current vote for user with id={}", userId);
-        return createNewFromTo(voteRepository.getVoteForToday((userId)));
+        return createNewTo(voteRepository.getVoteByDate(userId, CURRENT_DATE));
     }
 
     @GetMapping
     public List<VoteTo> getAll(@AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.getUser().id();
         log.info("get all votes for user with id={}", userId);
-        return createListFromTo(voteRepository.getAllByUserId(userId));
+        return createListTo(voteRepository.getAllByUserId(userId));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<VoteTo> create(@RequestBody Integer restaurantId, @AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.getUser().id();
         log.info("user with id={} votes for the restaurant with id={}", userId, restaurantId);
         restaurantRepository.checkExisted(restaurantId);
-        Optional<Vote> vote = voteRepository.findByUserIdAndCurrentDate((userId));
+        Optional<Vote> vote = voteRepository.findByUserIdAndDate(userId, CURRENT_DATE);
         if (vote.isEmpty()) {
             Vote created = new Vote(userRepository.getReferenceById(userId),
                     restaurantRepository.getReferenceById(restaurantId), LocalDate.now());
@@ -67,24 +71,26 @@ public class VoteController {
             URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(REST_URL + "/{id}")
                     .buildAndExpand(created.getId()).toUri();
-            return ResponseEntity.created(uriOfNewResource).body(createNewFromTo(created));
+            return ResponseEntity.created(uriOfNewResource).body(createNewTo(created));
         } else {
             throw new IllegalRequestDataException("You have already voted");
         }
     }
 
-    @Transactional
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
     public void update(@RequestBody Integer restaurantId, @AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.getUser().id();
         log.info("update user's vote with userId={} for the restaurant with id={}", userId, restaurantId);
         restaurantRepository.checkExisted(restaurantId);
-        if (LocalTime.now().isBefore(LocalTime.of(11, 0, 0))) {
-            Vote vote = voteRepository.getVoteForToday((userId));
-            Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
-            vote.setRestaurant(restaurant);
-            voteRepository.save(vote);
+        if (LocalTime.now().isBefore(VOTE_TIME)) {
+            Vote vote = voteRepository.getVoteByDate(userId, CURRENT_DATE);
+            if (vote != null) {
+                Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
+                vote.setRestaurant(restaurant);
+                voteRepository.save(vote);
+            }
         } else {
             throw new IllegalRequestDataException("It is too late, vote can't be changed");
         }

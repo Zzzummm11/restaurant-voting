@@ -9,10 +9,14 @@ import java.util.List;
 @UtilityClass
 public class VoteUtil {
 
-    public static VoteTo createNewFromTo(Vote vote) {
-        return new VoteTo(vote.getId(), vote.getUser().getId(),vote.getRestaurant().getId(), vote.getDate());
+    public static VoteTo createNewTo(Vote vote) {
+        if (vote == null) {
+            return null;
+        }
+        return new VoteTo(vote.getId(), vote.getUser().getId(), vote.getRestaurant().getId(), vote.getDate());
     }
-    public static List<VoteTo> createListFromTo(List<Vote> votes) {
-        return votes.stream().map(VoteUtil::createNewFromTo).toList();
+
+    public static List<VoteTo> createListTo(List<Vote> votes) {
+        return votes.stream().map(VoteUtil::createNewTo).toList();
     }
 }
