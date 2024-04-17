@@ -3,6 +3,7 @@ package ru.javaops.bootjava.web.dish;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,35 +37,33 @@ public class AdminDishController {
     @GetMapping("/{id}")
     public Dish get(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("get dish with id={} and restaurantId={}, ", id, restaurantId);
-        restaurantRepository.checkExisted(restaurantId);
         return dishRepository.getExistedByRestaurantId(id, restaurantId);
     }
 
     @GetMapping
     public List<Dish> getAll(@PathVariable int restaurantId) {
         log.info("get all dishes for restaurant with id={}, ", restaurantId);
-        restaurantRepository.checkExisted(restaurantId);
         return dishRepository.getAll(restaurantId);
     }
 
     @GetMapping("/menu")
     public List<Dish> getAllByDate(@PathVariable int restaurantId, @RequestParam LocalDate date) {
         log.info("get all dishes by date={} for restaurant with id={}, ", date, restaurantId);
-        restaurantRepository.checkExisted(restaurantId);
         return dishRepository.getAllByDate(restaurantId, date);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(value = "restaurantsWithMenu", allEntries = true)
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("delete dishId={} for restaurantId={}", id, restaurantId);
-        restaurantRepository.checkExisted(restaurantId);
         dishRepository.deleteExisted(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
+    @CacheEvict(value = "restaurantsWithMenu", allEntries = true)
     public ResponseEntity<Dish> create(@Valid @RequestBody DishTo dishTo, @PathVariable int restaurantId) {
         log.info("create new dish for restaurant with id={}", restaurantId);
         restaurantRepository.checkExisted(restaurantId);
@@ -80,6 +79,7 @@ public class AdminDishController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(value = "restaurantsWithMenu", allEntries = true)
     public void update(@Valid @RequestBody Dish dish, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("update dish with id={} and restaurantId={}", id, restaurantId);
         assureIdConsistent(dish, id);

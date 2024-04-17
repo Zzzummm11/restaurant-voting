@@ -3,6 +3,7 @@ package ru.javaops.bootjava.web.restaurant;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class AdminRestaurantController {
     }
 
     @GetMapping("/with-menu")
-    public List<Restaurant> getAllWithMenu(@RequestParam LocalDate date) {
+    public List<Restaurant> getAllWithMenuByDate(@RequestParam LocalDate date) {
         log.info("get all restaurants with menu by date={}", date);
         return repository.getAllWithMenuByDate(date);
     }
@@ -58,6 +59,7 @@ public class AdminRestaurantController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(value = "restaurantsWithMenu", allEntries = true)
     public void delete(@PathVariable int id) {
         log.info("delete restaurant with id={}", id);
         repository.deleteExisted(id);
@@ -65,6 +67,7 @@ public class AdminRestaurantController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
+    @CacheEvict(value = "restaurantsWithMenu", allEntries = true)
     public ResponseEntity<RestaurantTo> create(@Valid @RequestBody Restaurant restaurant) {
         log.info("create restaurant {}", restaurant);
         checkNew(restaurant);
@@ -78,6 +81,7 @@ public class AdminRestaurantController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(value = "restaurantsWithMenu", allEntries = true)
     public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
         log.info("update restaurant with id={}", id);
         repository.checkExisted(id);
