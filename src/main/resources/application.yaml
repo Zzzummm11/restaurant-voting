@@ -16,16 +16,7 @@ spring:
         jdbc.batch_size: 20
   datasource:
     # ImMemory
-    url: jdbc:h2:mem:bootjava
-    #    tcp: jdbc:h2:tcp://localhost:9092/mem:bootjava
-    # Absolute path
-    #    url: jdbc:h2:C:/projects/bootjava/db/bootjava
-    #    tcp: jdbc:h2:tcp://localhost:9092/C:/projects/bootjava/db/bootjava
-    # Relative path form current dir
-    #    url: jdbc:h2:./db/bootjava
-    # Relative path from home
-    #    url: jdbc:h2:~/bootjava
-    #    tcp: jdbc:h2:tcp://localhost:9092/~/bootjava
+    url: jdbc:h2:mem:restaurants
     username: sa
     password:
 
@@ -45,7 +36,7 @@ spring:
 logging:
   level:
     root: WARN
-    ru.javaops.bootjava: DEBUG
+    com.github.zzzummm272: DEBUG
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
 
 server.servlet:
