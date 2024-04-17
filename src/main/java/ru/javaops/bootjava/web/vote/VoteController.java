@@ -16,11 +16,11 @@ import ru.javaops.bootjava.repository.RestaurantRepository;
 import ru.javaops.bootjava.repository.UserRepository;
 import ru.javaops.bootjava.repository.VoteRepository;
 import ru.javaops.bootjava.to.VoteTo;
+import ru.javaops.bootjava.util.ClockProvider;
 import ru.javaops.bootjava.web.AuthUser;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +42,8 @@ public class VoteController {
     private UserRepository userRepository;
 
     private VoteRepository voteRepository;
+
+    private ClockProvider clockProvider;
 
     @GetMapping("/current-vote")
     public VoteTo getCurrent(@AuthenticationPrincipal AuthUser authUser) {
@@ -84,7 +86,7 @@ public class VoteController {
         int userId = authUser.getUser().id();
         log.info("update user's vote with userId={} for the restaurant with id={}", userId, restaurantId);
         restaurantRepository.checkExisted(restaurantId);
-        if (LocalTime.now().isBefore(VOTE_TIME)) {
+        if (clockProvider.getTime().isBefore(VOTE_TIME)) {
             Vote vote = voteRepository.getVoteByDate(userId, CURRENT_DATE);
             if (vote != null) {
                 Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
