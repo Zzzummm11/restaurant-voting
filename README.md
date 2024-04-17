@@ -19,6 +19,10 @@ Each restaurant provides a new menu each day.
 
 
 ***
+### Technology stack
+Spring Boot 3.2.0 / Spring Data JPA  / Hibernate / H2 / JUnit
+
+***
 
 ### Swagger/OpenAPI 3.0 (REST documentation)
 - http://localhost:8080/swagger-ui/index.html
